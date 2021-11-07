@@ -1,0 +1,27 @@
+.bg-purple {
+    background-color: #443531
+}
+
+.box {
+    display: flex;
+    flex-wrap: wrap; /* Optional. only if you want the items to wrap */
+    justify-content: center; /* For horizontal alignment */
+    align-items: center; /* For vertical alignment */
+}
+
+.table {
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+    border: 1px solid #ddd;
+  }
+  
+.th{
+    text-align: left;
+    padding: 8px;
+  }
+
+.td {
+    text-align: left;
+    padding: 8px;
+}
