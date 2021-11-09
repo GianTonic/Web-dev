@@ -1,43 +1,7 @@
-<html lang="en">
-<style> </style>
-<head></head>
-<body>
-<div style="overflow-x:auto;">
-    <table id="tableProdotti" class="table">
-            <thead>
-              <tr>
-                <th scope="col">Nome Prodotto</th>
-                <th scope="col">Venduto settimana precedente</th>
-                <th scope="col">Stock</th>
-                <th scope="col">Spazio Cella</th>
-                <th scope="col">Giacenza</th>
-                <th scope="col">Produzione settimana in corso</th>
-                <th scope="col">Giacenza Futura</th>
-                <th scope="col">Produzione Futura</th>
-              </tr>
-            </thead>
-            <tfoot>
-              <tr>
-                <th scope="col">Nome Prodotto</th>
-                <th scope="col">Venduto settimana precedente</th>
-                <th scope="col">Stock</th>
-                <th scope="col">Spazio Cella</th>
-                <th scope="col">Giacenza</th>
-                <th scope="col">Produzione settimana in corso</th>
-                <th scope="col">Giacenza Futura</th>
-                <th scope="col">Produzione Futura</th>
-              </tr>
-            </tfoot>
-          
-    </table>
-</div>
-</body>          
-</html>
 
-<script>
 var table;
-$(document).ready(function() {
 
+$(function() {
   const createdCell = function(cell) {
 	var original;
   cell.setAttribute('contenteditable', true)
@@ -107,10 +71,42 @@ $(document).ready(function() {
           {
                 text: 'Delete',
                 action: function ( e, dt, node, config ) {
-                    alert( 'Button activated' );
+                  var indexes = table
+                  .rows()
+                  .indexes()
+                  .filter( function ( value, index ) {
+                    //alert(table.row(value).data())
+                    if((table.row(value).data()[7])==0){
+                      return true;
+                    }
+                    else{
+                      return false;
+                    }
+                  });
+                  deleteRows(indexes);
                 }
-          },'csv', 'excel', 'pdf'
+          },
+          {     
+                extend: 'csv',
+                text: 'Csv',
+          },
+          {     
+                extend: 'excel',
+                text: 'Excel',
+          },
+          {     
+                extend: 'pdf',
+                text: 'Pdf',
+                exportOptions: {
+                  columns: [0,7]
+                }
+          }
         ],
+          initComplete: function () {
+            var btns = $('.dt-button');
+            //btns.addClass('btn btn-success btn-sm');
+            btns.css('background', 'white');
+        },
         columnDefs: [
           { 
             targets: [1,2,4,5,7], //'_all'
@@ -118,34 +114,43 @@ $(document).ready(function() {
           }
         ]
       } );
+
 } );
 
 function calcolaSpazioCella(vsp,stock) {
-  //alert(vsp+' '+stock)
   let mvsp = parseFloat(vsp)*parseFloat(1.7);
   let sc =  parseFloat(mvsp)+parseFloat(stock);
-  return sc;
+  return Math.ceil(sc);
 }
 
 function calcolaGiacenzaFutura(psic,g,vsp,sc) {
   let gf = parseFloat(psic)+parseFloat(g)-parseFloat(vsp);
-  //alert(gf+' = '+psic+' '+g+' '+vsp);
-  return gf; 
+  return Math.ceil(gf); 
 }
 
 function calcolaProduzioneFutura(vsp,sc,gf) {
   //alert('')
   let pf = parseFloat(0);
   if((parseFloat(gf)/parseFloat(vsp))>1.5){
-    //alert('gf '+parseFloat(gf)+'/ vsp '+parseFloat(vsp)+' = '+(parseFloat(gf)/parseFloat(vsp)));
-    return pf;
+    return Math.ceil(pf);
   }
   else{
-    //alert('gf '+parseFloat(gf)+'/ vsp '+parseFloat(vsp)+' = '+(parseFloat(gf)/parseFloat(vsp)));
     pf=parseFloat(sc)-parseFloat(gf);
-    //alert('sc '+parseFloat(sc)+'- gf '+parseFloat(gf)+' = pf '+pf);
-    return pf;
+    return Math.ceil(pf);
   }
 }
 
-</script>
+function deleteRows(indexes) {
+  /*table.rows().every(function(index){
+    alert(this.data()+index);
+    table.rows(index).remove().draw();
+});*/
+  /*var row = table.rows().data();
+  row.each(function (value, index) {
+  alert('For index '+index+', data value is '+value);
+    if(value[7]===0){
+      table.rows(index).remove().draw();
+    }
+  });*/
+  table.rows(indexes).remove().draw();
+}
